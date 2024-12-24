@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template_string
 from flask_cors import CORS  # Import Flask-CORS
 from yt_dlp import YoutubeDL
 import os
+import browser_cookie3
 
 app = Flask(__name__)
 CORS(app)
@@ -11,21 +12,27 @@ available_formats = []
 video_details = {}
 video_title = ''
 
+import browser_cookie3
+from yt_dlp import YoutubeDL
+
 def get_available_formats(video_url):
-    """Fetch available formats, video name, and thumbnail for the provided YouTube video URL."""
     global available_formats, video_details
     try:
+        # Automatically fetch cookies from your default browser (e.g., Chrome)
+        cookies = browser_cookie3.chrome()  # You can use browser_cookie3.firefox() if using Firefox
+
+        # Set up yt-dlp options with the fetched cookies
         ydl_opts = {
-            'quiet': True,  # Suppress unnecessary output
+            'quiet': True,
             'format': 'bestvideo+bestaudio/best',
-            'noplaylist': True,  # Avoid downloading playlists
+            'noplaylist': True,
+            'cookiefile': cookies,  # Pass cookies directly
         }
 
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=False)
             formats = info_dict.get('formats', [])
-            
-            # Extract video details
+
             video_details = {
                 'title': info_dict.get('title', 'Unknown Title'),
                 'thumbnail': info_dict.get('thumbnail', ''),
@@ -43,17 +50,22 @@ def get_available_formats(video_url):
                     'format_id': format_id,
                     'extension': f.get('ext', 'mp4'),
                 })
+
             return available_formats
+
     except Exception as e:
-        return str(e)
+        return {"error": f"Failed to fetch formats: {str(e)}"}
 
 def get_download_url(video_url, format_id):
-    """Fetch the direct download URL for a specific format."""
     try:
+        # Automatically fetch cookies from the browser
+        cookies = browser_cookie3.chrome()  # Use browser_cookie3.firefox() if using Firefox
+
         ydl_opts = {
-            'quiet': True,  # Suppress unnecessary output
+            'quiet': True,
             'format': format_id,
-            'noplaylist': True,  # Avoid downloading playlists
+            'noplaylist': True,
+            'cookiefile': cookies,  # Pass cookies directly
         }
 
         with YoutubeDL(ydl_opts) as ydl:
@@ -64,7 +76,7 @@ def get_download_url(video_url, format_id):
                     return f.get('url')  # Return the direct download URL
             return "Format not found"
     except Exception as e:
-        return str(e)
+        return {"error": f"Failed to fetch download URL: {str(e)}"}
 
 @app.route('/')
 def index():

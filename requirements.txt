@@ -1,3 +1,4 @@
 yt-dlp>=2024.1.1
 Flask
 Flask-Cors
+browser_cookie3
