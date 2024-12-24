@@ -15,11 +15,15 @@ def get_available_formats(video_url):
     """Fetch available formats, video name, and thumbnail for the provided YouTube video URL."""
     global available_formats, video_details
     try:
+        cookie_path = "cookies.txt"  # Update this path as per your project directory
+
         ydl_opts = {
             'quiet': True,  # Suppress unnecessary output
             'format': 'bestvideo+bestaudio/best',
             'noplaylist': True,  # Avoid downloading playlists
+            'cookiefile': cookie_path,  # Use the cookie file
         }
+
 
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=False)
@@ -50,10 +54,14 @@ def get_available_formats(video_url):
 def get_download_url(video_url, format_id):
     """Fetch the direct download URL for a specific format."""
     try:
+	cookie_path = "cookies.txt"  # Update this path as per your project directory
+
         ydl_opts = {
             'quiet': True,  # Suppress unnecessary output
             'format': format_id,
-            'noplaylist': True,  # Avoid downloading playlists
+            'cookiefile': cookie_path,  # Use the cookie file
+            'noplaylist': True,  # Avoid downloading playlist
+
         }
 
         with YoutubeDL(ydl_opts) as ydl:
