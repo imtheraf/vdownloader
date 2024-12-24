@@ -18,9 +18,12 @@ from yt_dlp import YoutubeDL
 def get_available_formats(video_url):
     global available_formats, video_details
     try:
-        # Automatically fetch cookies from your default browser (e.g., Chrome)
-        cookies = browser_cookie3.chrome()  # You can use browser_cookie3.firefox() if using Firefox
-
+        print(f"Processing URL: {video_url}")  # Log the URL being processed
+        
+        # Automatically fetch cookies from the browser
+        cookies = browser_cookie3.chrome()  # Use browser_cookie3.firefox() if using Firefox
+        print(f"Cookies: {cookies}")  # Log the cookies being used
+        
         # Set up yt-dlp options with the fetched cookies
         ydl_opts = {
             'quiet': True,
@@ -31,8 +34,12 @@ def get_available_formats(video_url):
 
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=False)
-            formats = info_dict.get('formats', [])
+            print(f"Info Dict: {info_dict}")  # Log the info dict to check what we're getting
 
+            formats = info_dict.get('formats', [])
+            if not formats:
+                print("No formats found.")
+            
             video_details = {
                 'title': info_dict.get('title', 'Unknown Title'),
                 'thumbnail': info_dict.get('thumbnail', ''),
@@ -51,10 +58,13 @@ def get_available_formats(video_url):
                     'extension': f.get('ext', 'mp4'),
                 })
 
+            print(f"Available Formats: {available_formats}")  # Log the available formats
             return available_formats
 
     except Exception as e:
+        print(f"Error: {str(e)}")  # Log any error
         return {"error": f"Failed to fetch formats: {str(e)}"}
+
 
 def get_download_url(video_url, format_id):
     try:
