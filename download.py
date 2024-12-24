@@ -54,7 +54,7 @@ def get_available_formats(video_url):
 def get_download_url(video_url, format_id):
     """Fetch the direct download URL for a specific format."""
     try:
-	cookie_path = "cookies.txt"  # Update this path as per your project directory
+        cookie_path = "cookies.txt"  # Update this path as per your project directory
 
         ydl_opts = {
             'quiet': True,  # Suppress unnecessary output
